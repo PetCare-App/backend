@@ -30,13 +30,19 @@ export class UsersService {
       orderBy: {
         email: 'asc',
       },
+      include: {
+        pets: true,
+      },
     });
     return users;
   }
 
   async findById(id: number): Promise<User> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id },
+      include: {
+        pets: true,
+      },
     });
     if (!user) {
       throw new NotFoundException('Ops... User not found. :(');

@@ -15,4 +15,16 @@ model User {
   email    String
   password String
   fullname String
+  pets     Pet[]
+}
+
+model Pet {
+  id     Int    @id @default(autoincrement())
+  name   String
+  breed  String
+  gender String
+  weight Float
+  age    Int
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
 }

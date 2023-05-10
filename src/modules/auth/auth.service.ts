@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compareSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
@@ -22,9 +22,9 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     let user: User;
     try {
-      user = await this.usersService.findByEmail(email);
+      user = await this.usersService.findByUsernamePassword(email, password);
     } catch (error) {
-      return null;
+      throw new UnauthorizedException('Incorrect username or password.');
     }
     const IsPasswordValid = compareSync(password, user.password);
     if (!IsPasswordValid) return null;
