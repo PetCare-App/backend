@@ -1,9 +1,21 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
+import { AnimalType } from '../animal-type.enum';
+import { TransformDate } from '../transform-date.decorator';
 
 export class CreatePetDto {
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @IsEnum(AnimalType)
+  animalType: AnimalType;
 
   @IsNotEmpty()
   @IsString()
@@ -18,8 +30,9 @@ export class CreatePetDto {
   weight: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  age: number;
+  @TransformDate
+  @IsDate()
+  birthDate: Date;
 
   @IsNotEmpty()
   @IsNumber()
