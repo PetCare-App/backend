@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
 import { Pet } from '@prisma/client';
 import { UsersService } from 'src/modules/users/service/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,12 +34,7 @@ export class PetsService {
   }
 
   async findById(id: number): Promise<Pet> {
-    const pet = await this.prisma.pet.findUnique({
-      where: { id },
-      include: {
-        user: true,
-      },
-    });
+    const pet = await this.prisma.pet.findFirst({ where: { id } });
     if (!pet) {
       throw new NotFoundException('Ops... Pet not found. :(');
     }
