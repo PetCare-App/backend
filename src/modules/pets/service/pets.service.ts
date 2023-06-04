@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePetDto } from './dto/create-pet.dto';
-import { UpdatePetDto } from './dto/update-pet.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+
 import { Pet } from '@prisma/client';
-import { UsersService } from '../users/service/users.service';
+import { UsersService } from 'src/modules/users/service/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreatePetDto } from '../dtos/create-pet.dto';
+import { UpdatePetDto } from '../dtos/update-pet.dto';
 
 @Injectable()
 export class PetsService {

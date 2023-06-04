@@ -28,6 +28,15 @@ model Pet {
   birthDate  DateTime
   userId     Int
   user       User       @relation(fields: [userId], references: [id])
+  vaccines   Vaccine[]
+}
+
+model Vaccine {
+  id    Int      @id @default(autoincrement())
+  name  String
+  date  DateTime
+  Pet   Pet?     @relation(fields: [petId], references: [id])
+  petId Int?
 }
 
 enum AnimalType {
