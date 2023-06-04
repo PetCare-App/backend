@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PetsService } from 'src/modules/pets/service/pets.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateVaccineDto } from '../dtos/create-vaccine.dto';
 import { UpdateVaccineDto } from '../dtos/update-vaccine.dto';
@@ -6,10 +7,18 @@ import { Vaccine } from '../entities/vaccine.entity';
 
 @Injectable()
 export class VaccinesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private petsService: PetsService,
+  ) {}
 
   async create(createVaccineDto: CreateVaccineDto): Promise<Vaccine> {
-    return this.prisma.vaccine.create({ data: { ...createVaccineDto } });
+    const pet = await this.petsService.findById(createVaccineDto.petId);
+    if (pet) {
+      return this.prisma.vaccine.create({
+        data: { ...createVaccineDto },
+      });
+    }
   }
 
   async findAll(): Promise<Vaccine[]> {
