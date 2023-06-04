@@ -1,17 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { PetsService } from './pets.service';
-import { CreatePetDto } from './dto/create-pet.dto';
-import { UpdatePetDto } from './dto/update-pet.dto';
+import { CreatePetDto } from '../dtos/create-pet.dto';
+import { UpdatePetDto } from '../dtos/update-pet.dto';
+import { PetsService } from '../service/pets.service';
 
 @Controller('pets')
 export class PetsController {
