@@ -29,9 +29,18 @@ model Pet {
   userId     Int
   user       User       @relation(fields: [userId], references: [id])
   vaccines   Vaccine[]
+  hygiene    Hygiene[]
 }
 
 model Vaccine {
+  id    Int      @id @default(autoincrement())
+  name  String
+  date  DateTime
+  Pet   Pet?     @relation(fields: [petId], references: [id])
+  petId Int?
+}
+
+model Hygiene {
   id    Int      @id @default(autoincrement())
   name  String
   date  DateTime
