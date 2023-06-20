@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Hygiene } from '@prisma/client';
 import { PetsService } from 'src/modules/pets/service/pets.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateHygieneDto } from '../dto/create-hygiene.dto';
 import { UpdateHygieneDto } from '../dto/update-hygiene.dto';
+import { Hygiene } from '../entities/hygiene.entity';
 
 @Injectable()
 export class HygieneService {
@@ -19,6 +19,14 @@ export class HygieneService {
         data: { ...createHygieneDto },
       });
     }
+  }
+
+  async findByPetId(petId: number){
+    const pet = await this.prisma.hygiene.findFirst({ where: { petId: petId } });
+    if (!pet) {
+      throw new NotFoundException('Ops... Pet not found. :(');
+    }
+    return pet;
   }
 
   async findAll(): Promise<Hygiene[]> {
