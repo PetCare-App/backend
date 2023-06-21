@@ -30,7 +30,7 @@ export class HygieneController {
     return await this.hygieneService.findOne(id);
   }
 
-  @Get(':id')
+  @Get('pet/:id')
   async findByPetId(@Param('id') id: number) {
     return await this.hygieneService.findByPetId(id);
   }
