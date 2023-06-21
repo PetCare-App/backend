@@ -34,7 +34,7 @@ export class ParasiteControlService {
 
   async findByPetId(petId: number){
     const pet = await this.petsService.findById(petId);
-    const parasiteControl = await this.prisma.parasiteControl.findFirst({ where: { petId: petId } }); 
+    const parasiteControl = await this.prisma.parasiteControl.findMany({ where: { petId: petId } }); 
     if (!pet || !parasiteControl) {
       throw new NotFoundException('Ops... Record not found. :(');
     }
