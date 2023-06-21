@@ -30,6 +30,11 @@ export class VaccinesController {
     return await this.vaccinesService.findOne(id);
   }
 
+  @Get('pet/:id')
+  async findByPetId(@Param('id') id: number) {
+    return await this.vaccinesService.findByPetId(id);
+  }
+
   @Patch(':id')
   async update(
     @Param('id') id: number,

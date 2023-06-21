@@ -37,6 +37,15 @@ export class VaccinesService {
     }
     return vaccine;
   }
+  
+  async findByPetId(petId: number){
+    const pet = await this.petsService.findById(petId);
+    const vaccine = await this.prisma.vaccine.findFirst({ where: { petId: petId } }); 
+    if (!pet || !vaccine) {
+      throw new NotFoundException('Ops... Record not found. :(');
+    }
+    return vaccine;
+  }
 
   async update(id: number, updateVaccineDto: UpdateVaccineDto) {
     const vaccine = await this.findOne(id);

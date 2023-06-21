@@ -32,6 +32,11 @@ export class ParasiteControlController {
     return await this.parasiteControlService.findOne(id);
   }
 
+  @Get('pet/:id')
+  async findByPetId(@Param('id') id: number) {
+    return await this.parasiteControlService.findByPetId(id);
+  }
+
   @Patch(':id')
   async update(
     @Param('id') id: number,

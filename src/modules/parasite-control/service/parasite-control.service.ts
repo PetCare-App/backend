@@ -32,6 +32,15 @@ export class ParasiteControlService {
     return parasiteControl;
   }
 
+  async findByPetId(petId: number){
+    const pet = await this.petsService.findById(petId);
+    const parasiteControl = await this.prisma.parasiteControl.findFirst({ where: { petId: petId } }); 
+    if (!pet || !parasiteControl) {
+      throw new NotFoundException('Ops... Record not found. :(');
+    }
+    return parasiteControl;
+  }
+
   async findOne(id: number) {
     const parasiteControl = await this.prisma.parasiteControl.findFirst({
       where: { id },
