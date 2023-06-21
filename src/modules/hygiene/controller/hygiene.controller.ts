@@ -30,6 +30,12 @@ export class HygieneController {
     return await this.hygieneService.findOne(id);
   }
 
+  @Get(':id')
+  async findByPetId(@Param('id') id: number) {
+    return await this.hygieneService.findByPetId(id);
+  }
+
+
   @Patch(':id')
   async update(
     @Param('id') id: number,
