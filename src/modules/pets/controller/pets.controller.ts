@@ -43,7 +43,7 @@ export class PetsController {
       const pet = await this.petsService.findById(id);
 
       const doc = new PDFDocument();
-      doc.pipe(fs.createWriteStream('uploads/pet.pdf'));
+      doc.pipe(fs.createWriteStream('uploads/mypet.pdf'));
 
       const titleFontSize = 20;
       const subtitleFontSize = 16;
@@ -55,11 +55,18 @@ export class PetsController {
       const labelBackgroundColor = '#ffffff';
       const labelBackgroundColor2 = '#fcb603';
       const opacity = 0.5;
-      const imagePath = 'uploads/filhote.jpg';
+      const imagePath =
+        pet.animalType == 'Cat'
+          ? 'uploads/filhotegato.jpg'
+          : 'uploads/filhote.jpg';
+
       const currentDate = new Date();
       const formattedDate = format(currentDate, 'dd/MM/yyyy HH:mm:ss');
       const formattedBirthDate = format(pet.birthDate, 'dd/MM/yyyy');
-      // Anexar a imagem ao documento PDF
+      const curiousText =
+        pet.animalType == 'Cat'
+          ? 'A visão de um gato é melhor e pior do que a de um humano: é melhor porque os gatos conseguem ver mais em ambientes mais difusos, e têm uma visão esférica superior. É pior porque não conseguem ver a cor tão bem como os humanos. Os cientistas acreditam que os gatos veem a erva em tom vermelho.'
+          : 'Os cães são conhecidos por sua capacidade olfativa impressionante. Seu nariz é uma ferramenta poderosa e altamente desenvolvida que desempenha um papel fundamental em sua vida diária. Você sabia que os cães têm cerca de 300 milhões de receptores olfativos em seus narizes, enquanto os humanos têm apenas cerca de 5 milhões?';
 
       doc
         .image(imagePath, 40, 25, { width: 70 })
@@ -78,8 +85,6 @@ export class PetsController {
         .text('Relatório de Registro do Pet', { align: 'center' })
         .moveDown();
 
-      // Estilização dos campos dentro de caixas
-
       // Array de campos com rótulos e valores
       const fields = [
         { label: 'Nome:', value: pet.name },
@@ -88,7 +93,6 @@ export class PetsController {
         { label: 'Data de Nascimento:', value: formattedBirthDate },
         { label: 'Gênero:', value: pet.gender },
         { label: 'Peso:', value: pet.weight },
-        // Adicione mais objetos ao array, se necessário
       ];
 
       const drawFields = (
@@ -168,28 +172,21 @@ export class PetsController {
       };
 
       drawFields(fields);
-      // drawFields(fields);
 
       doc.moveDown();
       doc.fontSize(subtitleFontSize).text('Curiosidades:', { align: 'left' });
 
       doc.moveDown();
-      doc
-        .fontSize(normalFontSize)
-        .text(
-          'Os cães são conhecidos por sua capacidade olfativa impressionante. Seu nariz é uma ferramenta poderosa e altamente desenvolvida que desempenha um papel fundamental em sua vida diária. Você sabia que os cães têm cerca de 300 milhões de receptores olfativos em seus narizes, enquanto os humanos têm apenas cerca de 5 milhões?',
-          { align: 'left' },
-        );
+      doc.fontSize(normalFontSize).text(curiousText, { align: 'left' });
 
       // Finalizar o PDF
-
       doc.end();
 
       response.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=pet.pdf',
       });
-      fs.createReadStream('uploads/pet.pdf').pipe(response);
+      fs.createReadStream('uploads/mypet.pdf').pipe(response);
     } catch (error) {
       response.status(404).json({ message: 'Pet não encontrado.' });
     }
