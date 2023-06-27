@@ -8,5 +8,6 @@ import { ParasiteControlService } from './service/parasite-control.service';
   imports: [PetsModule],
   controllers: [ParasiteControlController],
   providers: [ParasiteControlService, PrismaService],
+  exports: [ParasiteControlService],
 })
 export class ParasiteControlModule {}
