@@ -14,7 +14,7 @@ import { MailService } from './mail.service';
         secure: false,
         auth: {
           user: 'apikey',
-          pass: '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',
+          pass: process.env.SENDGRID_PASS
         },
         tls: {
           rejectUnauthorized: false,

@@ -28,8 +28,11 @@ export class UsersController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const userExists = await this.usersService.findByEmail(createUserDto.email);
-    if (userExists) throw new ForbiddenException(['User already exists!']);
-    await this.mailService.sendMail(createUserDto.email);
+    if (userExists) {
+      throw new ForbiddenException(['User already exists!']);
+    } else {
+      this.mailService.sendMail(createUserDto.email);
+    }
     return this.usersService.create(createUserDto);
   }
 

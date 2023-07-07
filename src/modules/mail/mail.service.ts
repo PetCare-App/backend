@@ -5,13 +5,13 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
-  
+
   async sendMail(email: string) {
     await this.mailerService.sendMail({
       to: email,
       from: 'petcaresenac@gmail.com',
       subject: 'Seja Bem-vindo(a) à PetCare! 🐾',
-      html:`<div style="background-color: pink; height: auto; padding: 3px">
+      html: `<div style="background-color: pink; height: auto; padding: 3px">
         <h2 style="font-family: Arial; color: #0e1a75; font-size: 24px; font-weight: bold; text-align: center;">
           Bem-vindo(a) a PetCare o melhor lugar para registrar as informações do seu pet ✍🏻
         </h2>
@@ -39,25 +39,37 @@ export class MailService {
         <p style="text-align: center; padding: 5px">
           <b>Equipe PetCare 🐶🐱</b>
         </p>
-      </div>`
-     });
-   }
-
-  async sendMailVaccine(email: string, name: string, vaccines: string, date: string, petName: string) {
-    await this.mailerService.sendMail({
-      to: email,
-      from: 'petcaresenac@gmail.com',
-      subject: `PetCare Informa! 🐾`,
-      html: `<div style="background-color: pink; height: auto; padding: 3px"><h2 style="font-family: Arial; color: #0e1a75; font-size: 24px; font-weight: bold; text-align: center;">Importante: Atualização de Cadastro 🔔</h2></div><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Olá, ${name} uma nova vacina foi criada para o seu pet na plataforma.</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Vacina: ${vaccines}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Data: ${date}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Nome do Pet: ${petName}</p><div style="font-family: Arial ;font-size: 16px; color: #0e1a75; text-align: center; background-color: #ffe3d1; height: auto;"><p style="text-align: center; padding: 5px"><b>Equipe PetCare 🐶🐱</b><p></div>`
+      </div>`,
     });
   }
 
-  async sendMailVaccineUpdate(email: string, name: string, vaccines: string, date: string, petName: string) {
+  async sendMailVaccine(
+    email: string,
+    name: string,
+    vaccines: string,
+    date: string,
+    petName: string,
+  ) {
     await this.mailerService.sendMail({
       to: email,
       from: 'petcaresenac@gmail.com',
       subject: `PetCare Informa! 🐾`,
-      html: `<div style="background-color: pink; height: auto; padding: 3px"><h2 style="font-family: Arial; color: #0e1a75; font-size: 24px; font-weight: bold; text-align: center;">Importante: Atualização de Cadastro 🔔</h2></div><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Olá, ${name} um registro de vacina foi atualizado.</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Vacina: ${vaccines}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Data: ${date}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Nome do Pet: ${petName}</p><div style="font-family: Arial ;font-size: 16px; color: #0e1a75; text-align: center; background-color: #ffe3d1; height: auto;"><p style="text-align: center; padding: 5px"><b>Equipe PetCare 🐶🐱</b><p></div>`
+      html: `<div style="background-color: pink; height: auto; padding: 3px"><h2 style="font-family: Arial; color: #0e1a75; font-size: 24px; font-weight: bold; text-align: center;">Importante: Atualização de Cadastro 🔔</h2></div><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Olá, ${name} uma nova vacina foi criada para o seu pet na plataforma.</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Vacina: ${vaccines}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Data: ${date}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Nome do Pet: ${petName}</p><div style="font-family: Arial ;font-size: 16px; color: #0e1a75; text-align: center; background-color: #ffe3d1; height: auto;"><p style="text-align: center; padding: 5px"><b>Equipe PetCare 🐶🐱</b><p></div>`,
+    });
+  }
+
+  async sendMailVaccineUpdate(
+    email: string,
+    name: string,
+    vaccines: string,
+    date: string,
+    petName: string,
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      from: 'petcaresenac@gmail.com',
+      subject: `PetCare Informa! 🐾`,
+      html: `<div style="background-color: pink; height: auto; padding: 3px"><h2 style="font-family: Arial; color: #0e1a75; font-size: 24px; font-weight: bold; text-align: center;">Importante: Atualização de Cadastro 🔔</h2></div><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Olá, ${name} um registro de vacina foi atualizado.</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Vacina: ${vaccines}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Data: ${date}</p><p style="font-family: Arial; color: #0e1a75; font-size: 16px;">Nome do Pet: ${petName}</p><div style="font-family: Arial ;font-size: 16px; color: #0e1a75; text-align: center; background-color: #ffe3d1; height: auto;"><p style="text-align: center; padding: 5px"><b>Equipe PetCare 🐶🐱</b><p></div>`,
     });
   }
 }
