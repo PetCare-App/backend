@@ -28,13 +28,24 @@ export class PetsService {
       },
       include: {
         user: true,
+        vaccines: true,
+        hygiene: true,
+        parasiteControl: true,
       },
     });
     return pets;
   }
 
   async findById(id: number): Promise<Pet> {
-    const pet = await this.prisma.pet.findFirst({ where: { id } });
+    const pet = await this.prisma.pet.findFirst({
+      where: { id },
+      include: {
+        user: true,
+        vaccines: true,
+        hygiene: true,
+        parasiteControl: true,
+      },
+    });
     if (!pet) {
       throw new NotFoundException('Ops... Pet not found. :(');
     }

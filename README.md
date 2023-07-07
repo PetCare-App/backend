@@ -35,12 +35,38 @@ src
 │   │   ├───controller
 │   │   ├───dtos
 │   │   ├───entities
-│   │   └───strategies
-│   └───users
+│   │   ├───strategies
+│   │   └───auth.module.ts
+│   ├───hygiene
+│   │   ├───controller
+│   │   ├───dtos
+│   │   ├───entities
+│   │   ├───service
+│   │   └───hygiene.module.ts
+│   ├───parasite-control
+│   │   ├───controller
+│   │   ├───dtos
+│   │   ├───entities
+│   │   ├───service
+│   │   └───parasite-control.module.ts
+│   ├───pets
+│   │   ├───controller
+│   │   ├───dtos
+│   │   ├───entities
+│   │   ├───service
+│   │   └───pets.module.ts
+│   ├───users
+│   │   ├───controller
+│   │   ├───dtos
+│   │   ├───entities
+│   │   ├───service
+│   │   └───users.module.ts
+│   └───vaccines
 │       ├───controller
 │       ├───dtos
 │       ├───entities
-│       └───service
+│       ├───service
+│       └───vaccines.module.ts
 ├───prisma
 │    └───prisma.service.ts
 │───app.module.ts

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,17 +19,18 @@ model User {
 }
 
 model Pet {
-  id         Int        @id @default(autoincrement())
-  animalType AnimalType
-  name       String
-  breed      String
-  gender     String
-  weight     Float
-  birthDate  DateTime
-  userId     Int
-  user       User       @relation(fields: [userId], references: [id])
-  vaccines   Vaccine[]
-  hygiene    Hygiene[]
+  id              Int               @id @default(autoincrement())
+  animalType      AnimalType
+  name            String
+  breed           String
+  gender          String
+  weight          Float
+  birthDate       DateTime
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id])
+  vaccines        Vaccine[]
+  hygiene         Hygiene[]
+  parasiteControl parasiteControl[]
 }
 
 model Vaccine {
@@ -41,6 +42,14 @@ model Vaccine {
 }
 
 model Hygiene {
+  id    Int      @id @default(autoincrement())
+  name  String
+  date  DateTime
+  Pet   Pet?     @relation(fields: [petId], references: [id])
+  petId Int?
+}
+
+model parasiteControl {
   id    Int      @id @default(autoincrement())
   name  String
   date  DateTime

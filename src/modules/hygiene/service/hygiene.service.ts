@@ -21,6 +21,15 @@ export class HygieneService {
     }
   }
 
+  async findByPetId(petId: number){
+    const pet = await this.petsService.findById(petId);
+    const hygiene = await this.prisma.hygiene.findMany({ where: { petId: petId } }); 
+    if (!pet || !hygiene) {
+      throw new NotFoundException('Ops... Record not found. :(');
+    }
+    return hygiene;
+  }
+
   async findAll(): Promise<Hygiene[]> {
     const hygiene = await this.prisma.hygiene.findMany({
       orderBy: {

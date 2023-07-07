@@ -5,6 +5,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { PetsModule } from './modules/pets/pets.module';
 import { UsersModule } from './modules/users/users.module';
 import { VaccinesModule } from './modules/vaccines/vaccines.module';
+import { ParasiteControlModule } from './modules/parasite-control/parasite-control.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { VaccinesModule } from './modules/vaccines/vaccines.module';
     PetsModule,
     VaccinesModule,
     HygieneModule,
+    ParasiteControlModule,
     MailModule,
   ],
   controllers: [],
