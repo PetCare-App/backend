@@ -7,17 +7,37 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { format } from 'date-fns';
+import { MailService } from 'src/modules/mail/mail.service';
+import { PetsService } from 'src/modules/pets/service/pets.service';
+import { UsersService } from 'src/modules/users/service/users.service';
 import { CreateVaccineDto } from '../dtos/create-vaccine.dto';
 import { UpdateVaccineDto } from '../dtos/update-vaccine.dto';
 import { VaccinesService } from '../service/vaccines.service';
 
 @Controller('vaccines')
 export class VaccinesController {
-  constructor(private readonly vaccinesService: VaccinesService) {}
+  constructor(
+    private readonly vaccinesService: VaccinesService,
+    private readonly petService: PetsService,
+    private readonly userService: UsersService,
+    private readonly mailService: MailService,
+  ) {}
 
   @Post()
   async create(@Body() createVaccineDto: CreateVaccineDto) {
-    return this.vaccinesService.create(createVaccineDto);
+    if (createVaccineDto.petId) {
+      const teste = await this.petService.findById(createVaccineDto.petId);
+      const findUser = await this.userService.findById(teste.userId);
+      this.mailService.sendMailVaccine(
+        findUser.email,
+        findUser.fullname,
+        createVaccineDto.name,
+        format(createVaccineDto.date, 'dd/MM/yyyy'),
+        teste.name,
+      );
+    }
+    return await this.vaccinesService.create(createVaccineDto);
   }
 
   @Get()
@@ -35,6 +55,17 @@ export class VaccinesController {
     @Param('id') id: number,
     @Body() updateVaccineDto: UpdateVaccineDto,
   ) {
+    if (updateVaccineDto.petId) {
+      const teste = await this.petService.findById(updateVaccineDto.petId);
+      const findUser = await this.userService.findById(teste.userId);
+      this.mailService.sendMailVaccineUpdate(
+        findUser.email,
+        findUser.fullname,
+        updateVaccineDto.name,
+        format(updateVaccineDto.date, 'dd/MM/yyyy'),
+        teste.name,
+      );
+    }
     return await this.vaccinesService.update(id, updateVaccineDto);
   }
 
