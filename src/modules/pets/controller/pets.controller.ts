@@ -13,13 +13,23 @@ import {
 import { format } from 'date-fns';
 import * as fs from 'fs';
 import * as PDFDocument from 'pdfkit';
+import { HygieneService } from 'src/modules/hygiene/service/hygiene.service';
+import { ParasiteControlService } from 'src/modules/parasite-control/service/parasite-control.service';
+import { UsersService } from 'src/modules/users/service/users.service';
+import { VaccinesService } from 'src/modules/vaccines/service/vaccines.service';
 import { CreatePetDto } from '../dtos/create-pet.dto';
 import { UpdatePetDto } from '../dtos/update-pet.dto';
 import { PetsService } from '../service/pets.service';
 
 @Controller('pets')
 export class PetsController {
-  constructor(private readonly petsService: PetsService) {}
+  constructor(
+    private readonly petsService: PetsService,
+    private readonly usersService: UsersService,
+    private readonly vaccinesService: VaccinesService,
+    private readonly hygieneService: HygieneService,
+    private readonly parasiteControlService: ParasiteControlService,
+  ) {}
 
   @UsePipes(ValidationPipe)
   @Post()
@@ -41,6 +51,12 @@ export class PetsController {
   async generatePDF(@Param('id') id: number, @Res() response) {
     try {
       const pet = await this.petsService.findById(id);
+      const userinfo = await this.usersService.findById(pet.userId);
+      const vaccineinfo = await this.vaccinesService.findByPetId(pet.id);
+      const hygieneinfo = await this.hygieneService.findByPetId(pet.id);
+      const parasiteinfo = await this.parasiteControlService.findByPetId(
+        pet.id,
+      );
 
       const doc = new PDFDocument();
       doc.pipe(fs.createWriteStream('uploads/mypet.pdf'));
@@ -51,7 +67,7 @@ export class PetsController {
       const lineGap = 5;
       const margin = 50;
       const boxMargin = 5;
-      const boxPadding = 5;
+      const boxPadding = 7;
       const labelBackgroundColor = '#ffffff';
       const labelBackgroundColor2 = '#fcb603';
       const opacity = 0.5;
@@ -85,7 +101,28 @@ export class PetsController {
         .text('Relatório de Registro do Pet', { align: 'center' })
         .moveDown();
 
-      // Array de campos com rótulos e valores
+      const vaccineFields = vaccineinfo.map((vaccine) => {
+        const formattedDate = format(vaccine.date, 'dd/MM/yyyy');
+        return {
+          label: 'Vacina:',
+          value: `${vaccine.name} - ${formattedDate}`,
+        };
+      });
+      const hygieneFields = hygieneinfo.map((hygiene) => {
+        const formattedDate = format(hygiene.date, 'dd/MM/yyyy');
+        return {
+          label: 'Higiene:',
+          value: `${hygiene.name} - ${formattedDate}`,
+        };
+      });
+      const parasiteFields = parasiteinfo.map((parasite) => {
+        const formattedDate = format(parasite.date, 'dd/MM/yyyy');
+        return {
+          label: 'Controle Parasitário:',
+          value: `${parasite.name} - ${formattedDate}`,
+        };
+      });
+      // Array de campos com rótulos & valores
       const fields = [
         { label: 'Nome:', value: pet.name },
         { label: 'Espécie:', value: pet.animalType },
@@ -93,21 +130,25 @@ export class PetsController {
         { label: 'Data de Nascimento:', value: formattedBirthDate },
         { label: 'Gênero:', value: pet.gender },
         { label: 'Peso:', value: pet.weight },
+        { label: 'Tutor:', value: userinfo.fullname },
+        ...vaccineFields,
+        ...hygieneFields,
+        ...parasiteFields,
       ];
 
       const drawFields = (
         fields: { label: string; value: string | Date | number }[],
       ) => {
-        const fieldWidth = (doc.page.width - 2 * margin - 2 * boxMargin) / 3;
+        const fieldWidth = (doc.page.width - 2 * margin - boxMargin) / 2;
         const fieldHeight = normalFontSize + 2 * boxPadding;
         const lineHeight =
           Math.max(fieldHeight, doc.currentLineHeight()) + lineGap;
         const maxFieldsPerColumn = Math.floor(
-          (doc.page.height - doc.y - margin - lineGap) / (2 * lineHeight),
+          (doc.page.height - 2 * margin - subtitleFontSize - lineGap) /
+            lineHeight,
         );
         let x = margin;
-        let y = doc.y + lineGap;
-        let columnIndex = 0;
+        let y = margin + subtitleFontSize + lineGap + lineHeight * 2; // Iniciar mais abaixo do título
         let fieldCount = 0;
 
         for (let i = 0; i < fields.length; i++) {
@@ -116,26 +157,20 @@ export class PetsController {
           if (fieldCount >= maxFieldsPerColumn) {
             // Mover para a próxima coluna
             x += fieldWidth + boxMargin;
-            y = doc.y + lineGap;
-            columnIndex++;
+            y = margin + subtitleFontSize + lineGap + lineHeight * 2; // Reiniciar mais abaixo do título
             fieldCount = 0;
           }
 
-          if (columnIndex >= 3) {
-            // Verificar se é necessário criar uma nova página para acomodar mais colunas
+          if (i > 0 && i % maxFieldsPerColumn === 0) {
+            // Verificar se é necessário criar uma nova página para acomodar mais campos
             doc.addPage();
             x = margin;
-            y = margin;
-            columnIndex = 0;
+            y = margin + subtitleFontSize + lineGap + lineHeight * 2; // Reiniciar mais abaixo do título
           }
-
-          // Calcular as coordenadas x e y com base no índice da coluna
-          const currentX = x + (fieldWidth + boxMargin) * columnIndex;
-          const currentY = y + fieldCount * (2 * lineHeight);
 
           // Desenhar a caixa do rótulo
           doc
-            .rect(currentX, currentY, fieldWidth, fieldHeight)
+            .rect(x, y, fieldWidth, fieldHeight)
             .fillOpacity(opacity)
             .fill(labelBackgroundColor);
 
@@ -143,16 +178,11 @@ export class PetsController {
             .fontSize(13)
             .font('Helvetica')
             .fillColor('black')
-            .text(label, currentX + boxPadding, currentY + boxPadding);
+            .text(label, x + boxPadding, y + boxPadding);
 
           // Desenhar a caixa do valor
           doc
-            .rect(
-              currentX,
-              currentY + fieldHeight + lineGap,
-              fieldWidth,
-              fieldHeight,
-            )
+            .rect(x + fieldWidth + boxMargin, y, fieldWidth, fieldHeight)
             .fillOpacity(opacity)
             .fill(labelBackgroundColor2);
 
@@ -162,11 +192,12 @@ export class PetsController {
             .font('Helvetica-Bold')
             .text(
               value.toString(),
-              currentX + boxPadding,
-              currentY + fieldHeight + lineGap + boxPadding,
+              x + fieldWidth + boxMargin + boxPadding,
+              y + boxPadding,
             )
             .moveDown();
 
+          y += lineHeight;
           fieldCount++;
         }
       };
@@ -174,12 +205,41 @@ export class PetsController {
       drawFields(fields);
 
       doc.moveDown();
-      doc.fontSize(subtitleFontSize).text('Curiosidades:', { align: 'left' });
+
+      const curiositiesWidth = doc.page.width - 2 * margin;
+      const curiositiesY = doc.y; // Salvar a posição atual do cursor
+
+      doc
+        .rect(margin, doc.y, curiositiesWidth, 0)
+        .fillOpacity(opacity)
+        .fill(labelBackgroundColor2);
 
       doc.moveDown();
-      doc.fontSize(normalFontSize).text(curiousText, { align: 'left' });
 
-      // Finalizar o PDF
+      doc
+        .fontSize(subtitleFontSize)
+        .fillColor('black')
+        .font('Helvetica-Bold')
+        .text('Curiosidades:', margin + boxPadding, doc.y + boxPadding, {
+          width: curiositiesWidth,
+          align: 'left',
+        });
+
+      doc.moveDown();
+
+      doc.fontSize(normalFontSize).text(curiousText, {
+        align: 'left',
+        width: curiositiesWidth,
+        height: doc.page.height - doc.y - margin,
+        columns: 1,
+      });
+
+      // Ajustar a posição do cursor após a seção de curiosidades
+      doc.y = curiositiesY + doc.currentLineHeight();
+
+      doc.moveDown();
+
+      // Finalizar
       doc.end();
 
       response.set({
