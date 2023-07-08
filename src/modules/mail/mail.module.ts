@@ -9,11 +9,11 @@ import { MailService } from './mail.service';
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.sendgrid.net',
+        host: 'smtp-relay.brevo.com',
         port: 587,
         secure: false,
         auth: {
-          user: 'apikey',
+          user: 'petcaresenac@gmail.com',
           pass: process.env.SENDGRID_PASS
         },
         tls: {
